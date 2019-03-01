@@ -1,0 +1,11 @@
+Instructions:
+
+Dependencies required for this project:
+    -Selenium
+    -fake_useragent
+
+Before scrapping, make sure you have the above dependencies..
+if not, open command prompt and install the packages using command - 'pip install _PackageName'
+
+
+Also, web driver is required for the selenium.. A chrome web driver is provided within the project folder
