@@ -1,51 +1,45 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[42]:
 
 
 import time
-import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import StaleElementReferenceException
-import os
-
-import numpy as np
 
 
 
 
 
-def pull_restaurant_reviews(browser,url):    
+def pull_restaurant_reviews(browser,url):
     
     print('Hitting the URL: ',url)
     browser.get(url)
+    #print(browser.title)
     time.sleep(5)
     
     try:
-    
-        All_reviews_link=browser.find_element_by_xpath('//*[@id="selectors"]/a[2]')
+
+        All_reviews_link=browser.find_element_by_xpath('//*[@id="selectors"]/a[1]')
         all_reviews_text = All_reviews_link.text
         #print(all_reviews_text)
         #print('All Reviews ' in all_reviews_text)
-
-        if not 'All Reviews ' in all_reviews_text:
-            All_reviews_link=browser.find_element_by_xpath('//*[@id="selectors"]/a[1]')
-            all_reviews_text = All_reviews_link.text
-            print('Clicked on All_reviews button ..')
+        if 'All Reviews ' in all_reviews_text:
+            #All_reviews_link=browser.find_element_by_xpath('//*[@id="selectors"]/a[1]')
+            #all_reviews_text = All_reviews_link.text
+            print('Under All_reviews Tab..')
             load_more_x_path='//*[@id="reviews-container"]/div[1]/div[3]/div[2]/div/div'
             all_reviews_container_div='zs-following-list'
         else:
+            All_reviews_link = browser.find_element_by_xpath('//*[@id="selectors"]/a[2]')
+            all_reviews_text = All_reviews_link.text
             All_reviews_link.click()
+
             print('Clicked on All_reviews button ..')
             load_more_x_path = '//*[@id="reviews-container"]/div[1]/div[3]/div/div/div[2]/div[1]'
             all_reviews_container_div='zs-following-list pbot'
 
         Total_Restaurant_Reviews=all_reviews_text.split('\n')[1]
-        time.sleep(5)
 
 
         #print('124125215')
@@ -54,41 +48,45 @@ def pull_restaurant_reviews(browser,url):
         #print(load_more_x_path)
 
         Load_More = browser.find_element_by_xpath(load_more_x_path)
-
+        load_more_exists = True
     #
     except NoSuchElementException as e:
         print('NoSuchElementException encountered before clicking load more..')
-        return None
+        load_more_exists=False
+        pass
     except StaleElementReferenceException:
         print('StaleElementReferenceException encountered')
-    
-    clicks=1
-    StaleElementCount=0
-    while clicks<60:
+        load_more_exists = False
+        pass
+    print(load_more_exists)
+    if load_more_exists:
+        clicks=1
+        StaleElementCount=0
+        while clicks<60:
 
-        try:    
-            Load_More.click()
-            if clicks%10==0:
-                print('Load More Button Clicked ',clicks,' times')
-            #print('Load More Button Clicked ',review_count,' times')
-            time.sleep(3)
-        
-        except NoSuchElementException or WebDriverException:
-            
-            print('Loaded all reviews ..')
-            break
-            
-        except StaleElementReferenceException as e:
-            
-            print('StaleElementReferenceException encountered, Scrapping reviews will begin... ' )
-            #time.sleep(5)
-            break
+            try:
+                Load_More.click()
+                if clicks%10==0:
+                    print('Load More Button Clicked ',clicks,' times')
+                #print('Load More Button Clicked ',review_count,' times')
+                time.sleep(3)
 
-        
-        clicks+=1
-        
+            except NoSuchElementException or WebDriverException:
 
-    #print(browser.page_source)zs-following-list
+                print('Loaded all reviews ..')
+                break
+
+            except StaleElementReferenceException as e:
+
+                print('StaleElementReferenceException encountered, Scrapping reviews will begin... ' )
+                #time.sleep(5)
+                break
+
+
+            clicks+=1
+
+
+    #print(browser.page_source)#zs-following-list
     soup = BeautifulSoup(browser.page_source,'html.parser')
     review_list_containers=soup.findAll('div',{'class':all_reviews_container_div}) # All Reviews Container Div
     #print(review_list_containers)
@@ -140,7 +138,7 @@ def pull_restaurant_reviews(browser,url):
             review_dict['review_title']=title
             #print(reviews.find('div',{'class':'rev-text mbot0 '}))
             review_text=review.get_text()
-            review_text=" ".join(review_text.split()[1:])    
+            review_text=" ".join(review_text.split()[1:])
             review_dict['user_review']=review_text
 
         except AttributeError:
