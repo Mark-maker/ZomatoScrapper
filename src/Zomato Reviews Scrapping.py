@@ -33,6 +33,12 @@ def scrape_reviews(start_index,stop_index):
             # print(url)
             reviews_df, success = scrape_reviews_from_url(chrome_browser, rest_review_url)
             if success:
+
+                if len(reviews_df)==0:
+                    print('CSV file will not be generated...')
+                    print('-'*100,'\n')
+                    not_scrapped = False
+                    continue
                 Rest_ID = str(row[1])
                 file_name = url.split('/')[-1]
                 #print(file_name)
