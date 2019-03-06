@@ -36,7 +36,7 @@ def scrape_reviews(start_index,stop_index):
                 Rest_ID = str(row[1])
                 file_name = url.split('/')[-1]
                 #print(file_name)
-                csv_file_name = reviews_folder_path + Rest_ID + file_name + '.csv'
+                csv_file_name = reviews_folder_path + Rest_ID + '-' + file_name + '.csv'
                 #print(row[1])
                 print('Restaurant ID:',Rest_ID)
                 reviews_df['Restaurant_ID'] = Rest_ID  # Copying the string values of IDs

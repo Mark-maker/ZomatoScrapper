@@ -40,7 +40,7 @@ def pull_restaurant_reviews(browser,url):
             all_reviews_container_div='zs-following-list pbot'
 
         Total_Restaurant_Reviews=all_reviews_text.split('\n')[1]
-
+        print('Total reviews available: ',Total_Restaurant_Reviews)
 
         #print('124125215')
         time.sleep(3)
