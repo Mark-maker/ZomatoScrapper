@@ -8,10 +8,8 @@ from src.common.properties import Chrome_driver_path
 def Create_Chrome_browser(headless=True, use_proxy=False, proxy=None):
     chrome_options = Options()
     if use_proxy:
-        proxy_text = proxy['ip'] + ':' + proxy['port']
-        proxy_text = 'http://' + str(proxy_text)
-        print('Browsing with ip: ', proxy_text)
-        chrome_options.add_argument('--proxy-server=' + proxy_text)
+        print('Browsing with ip: ', proxy)
+        chrome_options.add_argument('--proxy-server=' + proxy)
 
     if headless:
         chrome_options.add_argument('--headless')

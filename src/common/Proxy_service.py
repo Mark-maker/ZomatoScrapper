@@ -26,8 +26,12 @@ for row in proxies_table.tbody.find_all('tr'):
 
 #print(len(proxies))
 def random_proxy():
-    proxy_index =random.randint(0, len(proxies) - 1)
+
+    proxy_index = random.randint(0, len(proxies) - 1)
     proxy = proxies[proxy_index]
+    proxy_text = proxy['ip'] + ':' + proxy['port']
+    proxy_text = 'http://' + str(proxy_text)
+    proxy = {'http': proxy_text}
     return proxy
 
 def del_proxy(proxy):

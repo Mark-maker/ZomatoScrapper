@@ -58,15 +58,15 @@ def pull_restaurant_reviews(browser,url):
         print('StaleElementReferenceException encountered')
         load_more_exists = False
         pass
-    print(load_more_exists,load_more_x_path)
+    #print(load_more_exists)
     if load_more_exists:
         clicks=1
         StaleElementCount=0
         while clicks<60:
 
             try:
-                print(Load_More.click())
-                print(clicks)
+                Load_More.click()
+                #print(clicks)
                 if clicks%10==0:
                     print('Load More Button Clicked ',clicks,' times')
                 #print('Load More Button Clicked ',review_count,' times')
