@@ -22,12 +22,13 @@ def get_img_urls_from(url ,proxy):
             image_url = image_url.split('?')[0]
             # print(image_url)
             img_url_list.append(image_url)
+        return ','.join(img_url_list)
 
     except ConnectionError:
         print('ConnectionError inside get_img_urls_from() method, changing IP')
         return get_img_urls_from(url, random_proxy())
 
-    return img_url_list
+
 
 
 def get_geocode(url, proxy):

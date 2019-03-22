@@ -18,6 +18,7 @@ def get_restaurant_info(url, proxy):
         # time.sleep(5)
         soup = BeautifulSoup(r.content, 'html.parser')
         # print(soup)
+        #BeautifulSoup()
         rest_info_div = soup.find('div', {'class': 'row ui segment'})  # Info Container
 
     except AttributeError:
@@ -42,7 +43,7 @@ def get_restaurant_info(url, proxy):
     #     rest_info['Rest_Name']= ' '.join(name.split('-')).capitalize()
     # print(rest_info['Rest_Name'])
 
-    # GOLD OFFFER
+                                                  # GOLD OFFFER
 
     try:
 
@@ -57,7 +58,7 @@ def get_restaurant_info(url, proxy):
             else:
                 gold_offer = '2+2 ON DRINKS'
         else:
-            print('Gold Offer - Not Available for this Restaurant')
+            #print('Gold Offer - Not Available for this Restaurant')
             gold_offer = 'Not available'
         rest_info['GOLD_OFFER'] = gold_offer
 
@@ -65,7 +66,7 @@ def get_restaurant_info(url, proxy):
 
         print('AttributeError at GOLD: ', url)
 
-        # RESTAURANT PHONE NUMBERS
+                                              # RESTAURANT PHONE NUMBERS
 
     try:
         Phone_div = rest_info_div.find('div', {'class': 'phone'})
@@ -79,7 +80,7 @@ def get_restaurant_info(url, proxy):
         print('AttributeError: Phone Number', url)
         pass
 
-        # RESTAURANT TIMINGS
+                                           # RESTAURANT TIMINGS
     try:
         # print(rest_info['Phone'])
         openings_time_div = soup.find('div', {'class': 'res-info-timings'})
@@ -95,7 +96,7 @@ def get_restaurant_info(url, proxy):
         print('AttributeError: Timings', url)
         pass
 
-        # Buffet Menu and Timings
+                                             # Buffet Menu and Timings
 
     try:
         buffet_info_container = soup.find('div', {'class': 'res-info-detail buffet-details-resinfo-qv'})
@@ -120,12 +121,12 @@ def get_restaurant_info(url, proxy):
         print('AttributeError: Buffer', url)
         pass
 
-        # Restaurant Photos
+                                             # Restaurant Photos
 
     try:
 
-        rest_info['Food_Images'] = ','.join(get_img_urls_from(url + '/photos?category=food', proxy))
-        rest_info['Ambience_Images'] = ','.join(get_img_urls_from(url + '/photos?category=ambience', proxy))
+        rest_info['Food_Images'] = get_img_urls_from(url + '/photos?category=food', proxy)
+        rest_info['Ambience_Images'] = get_img_urls_from(url + '/photos?category=ambience', proxy)
 
     except AttributeError:
         print('AttributeError: Photos', url)
@@ -230,12 +231,13 @@ def get_restaurant_info(url, proxy):
         # RESTAURANT'S RATING AND VOTED
     try:
         # print(cost.findChildren('span'))
-        rating_div = soup.find('div', {'aria-label': 'Rated'})
-        # print(rating_div)
+        rating_div = soup.find('div', {'class': 'rate_agg'})
+        #print(rating_div)
         if not rating_div == None:
-            rest_info['Rating'] = ''.join(rating_div.get_text().split())
-            if not rest_info['Rating'] == 'NEW':
+            rest_info['Rest_Rating'] = ''.join(rating_div.get_text().split())
+            if not rest_info['Rest_Rating'] == 'NEW':
                 rest_info['Voted'] = soup.find('span', {'itemprop': 'ratingCount'}).get_text()
+        #print(rest_info['Rest_Rating'],rest_info['Voted'])
     except AttributeError:
         print('AttributeError At: Rating and Voted ', url)
         pass
@@ -298,23 +300,30 @@ def get_restaurant_info(url, proxy):
         print('AttributeError At: Restaurant\'s services rating', url)
         pass
 
-        # Restaurant DISCLAIMER FLAG
+                                            # Restaurant DISCLAIMER FLAG
 
     try:
 
         desclaimer_tag = soup.find('div', {'class': 'row res-disclaimer'})
+        #print(desclaimer_tag)
         desclaimer_Flag_text = desclaimer_tag.get_text().strip()
-        desclaimer_Flag_text = re.sub(r'[\w\s]', '', desclaimer_Flag_text)
-        rest_info['Is_Active'] = 1
-        rest_info['Deliver_Only'] = 0
+        desclaimer_Flag_text = re.sub(r'[^\w\s]', '', desclaimer_Flag_text)
+        rest_info['Is_Active'] = 'Active'
+        rest_info['Delivery_Only'] = 0
         if not desclaimer_Flag_text:
             pass
-        elif desclaimer_Flag_text == 'Delivery only':
-            rest_info['Delivery_Only'] = 1
-        elif desclaimer_Flag_text == 'Permanently closed':
-            rest_info['Is_Active'] = 0
-        print(desclaimer_Flag_text)
 
+        elif 'Delivery' in desclaimer_Flag_text:
+            rest_info['Delivery_Only'] = 1
+            print('This one is a cloud kitchen..')
+        elif 'closed' in desclaimer_Flag_text:
+            rest_info['Is_Active'] = desclaimer_Flag_text
+            print('This restaurant is closed :',url)
+        else:
+            print(desclaimer_Flag_text)
+
+        #print(desclaimer_Flag_text)
+        #print(rest_info['Is_Active'])
     except AttributeError:
         print('AttributeError: Restaurant\'s Disclaimer Flag', url)
         pass
